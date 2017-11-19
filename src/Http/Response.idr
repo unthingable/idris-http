@@ -85,9 +85,9 @@ parseBodyChunkEncoded = do
     parseBody x = do
       n <- pack <$> many (oneOf "\n\r")
       s <- pack <$> some (noneOf "\n\r")
-      let len = B.length (B.fromString (s ++ n))
-      if x - len < 0 then fail ("Somehow the String " ++ s ++ n ++ " is longer than " ++ show x)
-      else if x - len == 0 then crlf *> pure s
+      let len = the Int $ cast $ B.length (B.fromString (s ++ n))
+      if (x - len) < 0 then fail ("Somehow the String " ++ s ++ n ++ " is longer than " ++ show x)
+      else if (x - len) == 0 then crlf *> pure s
                            else map (s ++) $ parseBody (x - len)
 
 private
